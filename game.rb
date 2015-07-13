@@ -3,12 +3,13 @@ require_relative 'deck'
 
 class Game
 
-  attr_accessor :player, :dealer, :deck
+  attr_accessor :player, :dealer, :deck, :results
 
   def initialize
     @deck = Deck.new
     @player = @deck.cards.shift(2)
     @dealer = @deck.cards.shift(2)
+    @results = []
   end
 
   def play
@@ -20,15 +21,19 @@ class Game
   def blackjack_or_bust?
     if hand_value(dealer) == 21 && dealer.length == 2
       puts "DEALER BLACKJACK! You lost. _sad trombone_"
+      results << :loss
       play_again?
     elsif hand_value(player) == 21 && player.length == 2
       puts "BLACKJACK! You win!"
+      results << :win
       play_again?
     elsif hand_value(player) > 21
       puts "BUSTED! You have #{hand_value(player)} points."
+      results << :loss
       play_again?
     elsif hand_value(dealer) > 21
       puts "DEALER BUST! The computer has #{hand_value(dealer)}. YOU WIN!"
+      results << :win
       play_again?
     end
   end
@@ -69,6 +74,7 @@ class Game
   def win_on_six?
     if player.length == 6 && hand_value(player) <= 21
       puts "YOU WIN! You drew six cards without busting."
+      results << :win
       play_again?
     end
   end
@@ -85,14 +91,18 @@ class Game
   def determine_winner
     if hand_value(player) > hand_value(dealer)
       puts "YOU WIN!"
+      results << :win
     elsif hand_value(player) == hand_value(dealer)
       if player.length >= dealer.length
         puts "YOU WIN!"
+        results << :win
       else
         puts "YOU LOST!"
+        results << :loss
       end
     else
       puts "YOU LOST!"
+      results << :loss
     end
     play_again?
   end
